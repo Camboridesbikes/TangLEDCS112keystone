@@ -1,5 +1,7 @@
 package app;
 
+import java.util.Random;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Collections;
 
@@ -11,15 +13,17 @@ import org.joda.time.DateTime;
 
 public class MeshHandler {
 
-    private static String logTime(){
-        DateTime now = new DateTime();
-        return String.format ("[%02d:%02d:%02d:%03d] ",
-				now.getHourOfDay(),
-				now.getMinuteOfHour(),
-				now.getSecondOfMinute(),
-				now.getMillisOfSecond());
+    
 
-    }
+    // private static String logTime(){
+    //     DateTime now = new DateTime();
+    //     return String.format ("[%02d:%02d:%02d:%03d] ",
+	// 			now.getHourOfDay(),
+	// 			now.getMinuteOfHour(),
+	// 			now.getSecondOfMinute(),
+	// 			now.getMillisOfSecond());
+
+    // }
 
     // static long createMeshId(String macAddress){
     //     long calcNodeId = -1;
@@ -44,44 +48,59 @@ public class MeshHandler {
     //     return calcNodeId;
     // }
 
-    static String getWifiMacAddress(){
-        try{
-            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface intf : interfaces){
-                if(!intf.getName().equalsIgnoreCase("wlan0")) continue;
-                byte[] mac = intf.getHardwareAddress();
-                if(mac==null) return " ";
-                StringBuilder buf = new StringBuilder();
-                if(buf.length()>0) buf.deleteCharAt(buf.length()-1);
-                return buf.toString();
-            }
+    // static String getWifiMacAddress(){
+    //     try{
+    //         List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+    //         for (NetworkInterface intf : interfaces){
+    //             if(!intf.getName().equalsIgnoreCase("wlan0")) continue;
+    //             byte[] mac = intf.getHardwareAddress();
+    //             if(mac==null) return " ";
+    //             StringBuilder buf = new StringBuilder();
+    //             if(buf.length()>0) buf.deleteCharAt(buf.length()-1);
+    //             return buf.toString();
+    //         }
 
-        }catch(Exception ignored){}
-            return "01:02:03:04:05:06";
+    //     }catch(Exception ignored){}
+    //         return "01:02:03:04:05:06";
         
-    }
+    // }
+
+
+    /*
+        I noticed that when I broadcast the message to the network, 
+        I recieve a node connection request. I should be able to query 
+        the network to get the necessary info to connect as a node.
+    */
 
     static public void nodeSyncRequest(){
-        String dataSet = logTime();
-        dataSet += "Sending NODE_SYNC_REQUEST\n";
+        Random rand = new Random();
+        DecimalFormat decForm = new DecimalFormat("000");
+
+        String message = "";
+
+        message = String.format("%s,%s,%s,%d", decForm.format(rand.nextInt(150)),decForm.format(rand.nextInt(150)),decForm.format(rand.nextInt(150)),150);
+
+        //String dataSet = logTime();
+        //dataSet += "Sending NODE_SYNC_REQUEST\n";
 
         JSONObject nodeMessage = new JSONObject();
         //JSONArray subsArray = new JSONArray();
+        
         try{
             nodeMessage.put("dest", /**nodeId */0);
                nodeMessage.put("from", 0);
                nodeMessage.put("type", 8);
-               nodeMessage.put("msg", "000,050,050,100");
+               nodeMessage.put("msg", message);
 
                String msg = nodeMessage.toString();
                byte[] data = msg.getBytes();
                MeshConnect.WriteData(data);
-                try{
-                    App.out.append(dataSet);
-                }catch(IOException e){
-                    e.printStackTrace();
-                }
-            System.out.println("Sending sync request " + msg );
+                // try{
+                //     App.out.append(dataSet);
+                // }catch(IOException e){
+                //     e.printStackTrace();
+                // }
+            System.out.println("Sending message " + msg );
 
         } catch(Exception e){
             System.out.println("Sync Request failed: " + e);

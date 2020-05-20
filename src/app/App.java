@@ -1,5 +1,3 @@
-//I noticed that when I broadcast the message to the network, I recieve a node connection request. I should be able to query the network to get the necessary info to connect as a node
-
 package app;
 import java.net.*;
 import java.nio.channels.NetworkChannel;
@@ -31,7 +29,7 @@ public class App {
         
 
         try{
-             startTime = System.currentTimeMillis();
+             //startTime = System.currentTimeMillis();
 
             //new Thread(new ConnectRunnable()).start();
             MeshConnect.Connect(ip, port);
