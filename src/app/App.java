@@ -1,12 +1,20 @@
-package app;
-import java.net.*;
-import java.nio.channels.NetworkChannel;
+/*=======================
+ *  TangLED Lantern App
+ *      App.java
+ *=======================
+ *  
+ * Driver program that connects to the mesh network and delivers a message.
+ * 
+ * @author Cameron Hattendorf
+ * @version v.02
+*/
 
-import org.json.*;
+package app;
 
 //import jdk.internal.jline.internal.InputStreamReader;
 
 import java.io.*;
+import java.util.Scanner;
 
 public class App { 
     
@@ -17,60 +25,28 @@ public class App {
 
     static BufferedWriter out = null;
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
+        Scanner key;
+
         String ip;
         int port;
-    
-        ip =  "10.251.129.1";
-        port = 5555;
 
-        //myNodeId = MeshHandler.createMeshId(MeshHandler.getWifiMacAddress());
+        key = new Scanner(System.in);
         
+        //10.251.129.1
+        ip =  "10.251.129.1";
+        port = 5555;   
         
+        //System.out.print("Enter the ip of your network: ");
+        //ip = key.next();
+
 
         try{
-             //startTime = System.currentTimeMillis();
-
-            //new Thread(new ConnectRunnable()).start();
             MeshConnect.Connect(ip, port);
-
-        }finally{
-            
-            
+        }finally{            
+                       
         }
+
+        key.close(); 
     }
-
-    // public static class ConnectRunnable implements Runnable{
-    //     public void run(){
-    //         try{
-               
-
-                
-
-    
-    //             //InetAddress address = InetAddress.getByName( ip);
-    //             //Socket meshSocket = new Socket(address, port);
-
-    //             long time = System.currentTimeMillis() - startTime;
-
-                
-
-    //             //BufferedReader meshInput = new BufferedReader( new InputStreamReader(meshSocket.getInputStream()));
-    //             //DataOutputStream localOutput = new DataOutputStream(meshSocket.getOutputStream());
-                
-    //              //making the json to send for sync request
-           
-           
-
-    //             System.out.println("Connection made. Sending message...");
-
-    //             //localOutput.writeBytes(msg);
-
-    //             //String meshData = meshInput.readLine();
-    //             //System.out.println("recieved: " + meshData);
-    //         }catch(Exception e){
-    //             System.out.println(e);
-    //         }
-    //     }
-    // }
 }

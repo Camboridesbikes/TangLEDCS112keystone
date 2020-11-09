@@ -27,21 +27,67 @@ public class MeshConnect {
     //Thread to recieve
     private static Thread receiveThread;
 
-    static void Connect(String ip, int port){
+    /**
+     * Returns true if connected to the mesh network, else returns false
+     * @return Boolean
+     */
+    public static boolean isConnected(){
+        return meshSocket != null && meshSocket.isConnected() && !meshSocket.isClosed();
+    }
+
+    /**
+     * Open a connection to the mesh with a new thread
+     * @param ip
+     * @param port
+     */
+    public static void Connect(String ip, int port){
         meshIp = ip;
         meshPort = port;
         //start new thread
         new Thread(new ConnectRunnable()).start();
    }
+   
+   /**
+    * Close the socket connectd to the mesh. stopping the threads first
+    */
+   public static void Disconnect(){
+        stopThreads();
 
-   static void WriteData(byte[] data){
+        try {
+            meshSocket.close();
+            System.out.println("Disconnected!");
+        } catch (IOException e) {
+            System.out.println("ERROR: FAILED to disconnect: " + e.getMessage());
+        }
+   }
+
+
+   /**
+    * Send data to the mesh network
+    * @param data message converted to byte array to communicate instructions into the mesh network
+    */
+   public static void WriteData(byte[] data){
        startSending();
        sendRunnable.Send(data);
    }
 
-   //start thread to receive data from the mesh
+   /**
+    * Stop the send and recieve threads
+    */
+   private static void stopThreads(){
+       if(receiveThread != null){
+           receiveThread.interrupt();
+       }
+       if(sendThread != null){
+           sendThread.interrupt();
+       }
+   }
+
+   /**
+    * start thread to receive data from the mesh
+    */
    private static void startReceiving(){
-        ReceiveRunnable receiveRunnable = new ReceiveRunnable(meshSocket);
+        ReceiveRunnable receiveRunnable = new ReceiveRunnable(meshSocket); //
         receiveThread = new Thread(receiveRunnable);
         receiveThread.start();
    }
@@ -52,7 +98,10 @@ public class MeshConnect {
         sendThread.start();
    }
 
-   static class ConnectRunnable implements Runnable{
+   /**
+    * 
+    */
+   public static class ConnectRunnable implements Runnable{
         public void run(){
             try{
                  System.out.println("Connecting...") ;
@@ -66,14 +115,14 @@ public class MeshConnect {
                 meshSocket.setReuseAddress(true);
 
                 //Start connection w/ 5000 ms timeout
-                meshSocket.connect(new InetSocketAddress(meshAddress, meshPort), 5000);
+                meshSocket.connect(new InetSocketAddress(meshAddress, meshPort), 10000);
 
                 System.out.println("Connected");
 
                 startReceiving();
 
                 //send node Sync request
-                MeshHandler.nodeSyncRequest();
+                MeshHandler.nodeMessageRequest();
 
             }catch(Exception e){
             System.out.println("connection failed: " + e);
@@ -85,7 +134,7 @@ public class MeshConnect {
         
     // }
 
-    static class ReceiveRunnable implements Runnable {
+    public static class ReceiveRunnable implements Runnable {
         private final Socket socket;
         private InputStream input;
 
@@ -126,8 +175,9 @@ public class MeshConnect {
                         System.out.println("Data received!");
 
                         //stop recieve thread after data has been recieved
-                        receiveThread.interrupt();
-                        receiveThreadRunning = false;
+                        MeshHandler.nodeSyncRequest();
+                        //receiveThread.interrupt();
+                        //receiveThreadRunning = false;
                 
                     }
 
@@ -138,6 +188,8 @@ public class MeshConnect {
         }
     }
 
+    public 
+    
     static class SendRunnable implements Runnable {
         byte[] data;
         private OutputStream out;

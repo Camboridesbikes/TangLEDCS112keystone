@@ -4,5 +4,4 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>
 	<classpathentry kind="lib" path="C:\Users\hatte\Downloads\json-20190722.jar"/>
-	<classpathentry kind="lib" path="C:\Users\hatte\Downloads\joda-time-2.10.6.jar"/>
 </classpath>
