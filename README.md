@@ -14,6 +14,6 @@ The lanterns are built off esp32 and esp8285/8266 microcontrollers.
 
 Libraries used: PainlessMesh, FastLED
 
-​	The lanterns I am using  
+Examples of the current prototypes in action: https://www.youtube.com/watch?v=twDgDSry_0c https://www.youtube.com/watch?v=GCt-INOi8gM 
 
 ## Desktop Application (with GUI)
