@@ -14,6 +14,20 @@ The lanterns are built off esp32 and esp8285/8266 microcontrollers.
 
 Libraries used: PainlessMesh, FastLED
 
-Examples of the current prototypes in action: https://www.youtube.com/watch?v=twDgDSry_0c https://www.youtube.com/watch?v=GCt-INOi8gM 
+​	I designed the lanterns using golden ratios. My first two fleshed out prototypes were modeled in AutoCAD and put together by myself.  They each have sound sensors. When they pick up sound, they change color and switch to a transition mode. Upon the completion of the transition mode, the lantern that heard the sound sends the color to the other lanterns and returns to a glowing mode with a new color. These lanterns can receive a command from the desktop application to change their color.
+
+Examples of the current prototypes in action:
+
+ Single Lantern at Night: https://www.youtube.com/watch?v=twDgDSry_0c
+
+Both Lanterns Interacting: https://www.youtube.com/watch?v=GCt-INOi8gM
+
+
+
+​	The lanterns I am using for this project are minimal and made of cardboard, without a sound sensor. They can currently receive a command to change color from the java application. My goal for the end of the school project is to also change modes from the java application.
+
+
 
 ## Desktop Application (with GUI)
+
+​	The desktop application is written in java with javafx running the GUI. The classes connecting to the mesh and handling the mesh data are using a lot of code and design from [painlessMeshAndroid](https://gitlab.com/painlessMesh/painlessmesh_android) by Bernd Giesecke.
