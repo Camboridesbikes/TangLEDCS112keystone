@@ -31,3 +31,6 @@ Both Lanterns Interacting: https://www.youtube.com/watch?v=GCt-INOi8gM
 ## Desktop Application (with GUI)
 
 ​	The desktop application is written in java with javafx running the GUI. The classes connecting to the mesh and handling the mesh data are using a lot of code and design from [painlessMeshAndroid](https://gitlab.com/painlessMesh/painlessmesh_android) by Bernd Giesecke.
+
+![Image of GUI](https://github.com/Camboridesbikes/TangLEDCS112keystone/blob/main/TangLED.PNG?raw=true)
+
