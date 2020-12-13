@@ -85,7 +85,7 @@ void receivedCallback(uint32_t from, String &msg )
 //check message for command
 if(msg.substring(0, 4).equals("talk")){
   //switch statement to handle
-  _hue = random(0,254);
+  _hue = static_cast<uint8_t>(atoi(msg.substring(5,9).c_str()));
 }
  
 

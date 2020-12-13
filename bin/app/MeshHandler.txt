@@ -1,0 +1,215 @@
+package app;
+
+import java.net.NetworkInterface;
+import java.util.Collections;
+import java.util.List;
+
+import java.text.DecimalFormat;
+import java.util.Random;
+
+import org.joda.time.DateTime;
+import org.json.*;
+
+public class MeshHandler {
+
+    
+
+    private static String logTime(){
+        DateTime now = new DateTime();
+        return String.format ("[%02d:%02d:%02d:%03d] ",
+				now.getHourOfDay(),
+				now.getMinuteOfHour(),
+				now.getSecondOfMinute(),
+				now.getMillisOfSecond());
+
+    }
+
+    static long createMeshId(String macAddress){
+        System.out.println("Creating mesh ID from " + macAddress + "...");
+        long calcNodeId = -1;
+        String[] macAddressParts = macAddress.split(":");
+        if (macAddressParts.length == 6){
+            try {
+                long number = Long.valueOf(macAddressParts[2],16);
+				if (number < 0) {number = number * -1;}
+				calcNodeId = number * 256 * 256 * 256;
+				number = Long.valueOf(macAddressParts[3],16);
+				if (number < 0) {number = number * -1;}
+				calcNodeId += number * 256 * 256;
+				number = Long.valueOf(macAddressParts[4],16);
+				if (number < 0) {number = number * -1;}
+				calcNodeId += number * 256;
+				number = Long.valueOf(macAddressParts[5],16);
+				if (number < 0) {number = number * -1;}
+				calcNodeId += number;
+   
+            }catch(NullPointerException ignore){
+                System.out.println("createID fail");
+                calcNodeId = -1;
+            }
+        }
+        return calcNodeId;
+    }
+
+    static String getWifiMacAddress(){
+        try{
+            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface intf : interfaces){
+                if(!intf.getName().equalsIgnoreCase("wlan0")) continue;
+                byte[] mac = intf.getHardwareAddress();
+                if(mac==null) return " ";
+                StringBuilder buf = new StringBuilder();
+                for(byte aMac : mac) buf.append(String.format("%02X:", aMac));
+                if(buf.length()>0) buf.deleteCharAt(buf.length()-1);
+                return buf.toString();
+            }
+
+        }catch(Exception ignored){}
+            return "01:02:03:04:05:06";
+        
+    }
+
+
+    /*
+        I noticed that when I broadcast the message to the network, 
+        I recieve a node connection request. I should be able to query 
+        the network to get the necessary info to connect as a node.
+    */
+
+    static public void nodeSyncRequest(){
+
+        JSONObject nodeMessage = new JSONObject();
+        JSONArray subsArray = new JSONArray();
+        
+        try{
+            nodeMessage.put("dest", App.apNodeId);
+               nodeMessage.put("from", App.myNodeId);
+               nodeMessage.put("type", 5);
+               nodeMessage.put("subs", "");
+
+               String msg = nodeMessage.toString();
+               byte[] data = msg.getBytes();
+               MeshConnect.WriteData(data);
+                // try{
+                //     App.out.append(dataSet);
+                // }catch(IOException e){
+                //     e.printStackTrace();
+                // }
+            System.out.println("Sending message " + msg );
+
+        } catch(Exception e){
+            System.out.println("Sync Request failed: " + e);
+        }          
+               
+    }
+    static public void nodeTimeSyncRequest(int reqType, Long timeStamp ){
+        if(MeshConnect.isConnected()){
+            String dataSet = logTime();
+            //dataSet += "sending TIME_SYNC_REQUEST\n";
+            JSONObject nodeMessage = new JSONObject();
+            JSONObject typeObject = new JSONObject();
+            try {
+                nodeMessage.put("dest", App.apNodeId);
+				nodeMessage.put("from", App.myNodeId);
+                nodeMessage.put("type", 4);
+                switch(reqType){
+                    case 0 :
+                        typeObject.put("type", 0);
+                        break;
+                    case 1 :
+                        typeObject.put("type", 1);
+                        typeObject.put("t0", dataSet);
+                        break;
+                    case 2 : 
+                        typeObject.put("type", 2); 
+                        typeObject.put("t0", timeStamp);
+                        typeObject.put("t1", dataSet);
+                        typeObject.put("t2", logTime());
+
+                }
+				
+                nodeMessage.put("msg", typeObject);
+                String msg = nodeMessage.toString();
+                byte[] data = msg.getBytes();
+                MeshConnect.WriteData(data);
+                System.out.println("Sending time sync request" + msg);
+            } catch (Exception e) {
+                System.out.println("Error sending request:" + e.getMessage());
+            }
+        }
+    }
+
+    static public void nodeMessageRequest(){
+        Random rand = new Random();
+        DecimalFormat decForm = new DecimalFormat("000");
+
+        String message = ("talk" + decForm.format(App.hue));
+
+        //message = String.format("%s,%s,%s,%d", decForm.format(rand.nextInt(150)),decForm.format(rand.nextInt(150)),decForm.format(rand.nextInt(150)),250);
+
+        JSONObject nodeMessage = new JSONObject();
+        //JSONArray subsArray = new JSONArray();
+        
+        try{
+            nodeMessage.put("dest", /**nodeId */0);
+               nodeMessage.put("from", 0);
+               nodeMessage.put("type", 8);
+               nodeMessage.put("msg", message);
+
+               String msg = nodeMessage.toString();
+               byte[] data = msg.getBytes();
+               MeshConnect.WriteData(data);
+                // try{
+                //     App.out.append(dataSet);
+                // }catch(IOException e){
+                //     e.printStackTrace();
+                // }
+            System.out.println("Sending message " + msg );
+
+        } catch(Exception e){
+            System.out.println("Sync Request failed: " + e);
+        }          
+               
+    }
+    
+    /**A method that processes the messages from the mesh by checking for the type, and deliberating what to do next
+     * 
+      */
+      public static void processMessage(String msg){
+        JSONObject jsonMessage = new JSONObject(msg);//converts message string into a JSON object
+
+          if(msg.contains("\"type\":6"))//node sync reply
+          {
+            if(App.apNodeId == 0)//checks if access node has been discovered
+            {
+
+                //pulls access point node's ID, saves it and sends another sync request
+                App.apNodeId = jsonMessage.getLong("from");
+                System.out.println("apNodeId :" + App.apNodeId);
+                nodeSyncRequest();
+
+            }
+            else
+            {
+                //if we already know the apNodeId, start the mesh protocol by sending a time sync request
+                nodeTimeSyncRequest(0, null); 
+            }                                                      
+        }
+        if(msg.contains("\"type\":4"))//time sync request
+        {
+            if(msg.contains("\"type\":0"))//req time
+            {
+                nodeTimeSyncRequest(1, null);
+            }
+            else if(msg.contains("\"type\":1"))
+            {
+                Long timestamp =jsonMessage.getJSONObject("msg").getLong("t0"); 
+                System.out.println("recieved timestamp " + timestamp );
+                nodeTimeSyncRequest(2, timestamp);
+            }
+
+        }
+
+      }
+
+}

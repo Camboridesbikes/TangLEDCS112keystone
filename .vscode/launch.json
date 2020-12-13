@@ -15,7 +15,8 @@
             "name": "Debug (Launch)-App<Final>",
             "request": "launch",
             "mainClass": "app.App",
-            "projectName": "Final"
+            "projectName": "Final",
+            "vmArgs": "--module-path C:/PROGRA~1/Java/javafx-sdk-11.0.2/lib --add-modules javafx.controls,javafx.fxml"
         }
     ]
 }
