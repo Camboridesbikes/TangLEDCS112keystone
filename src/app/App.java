@@ -13,12 +13,6 @@
 
 package app;
 
-//import jdk.internal.jline.internal.InputStreamReader;
-
-import java.io.*;
-import java.util.Scanner;
-import java.net.*;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -30,18 +24,9 @@ public class App extends Application{
 
     public static long startTime;
 
-    public static int hue = 0;
-
-    static BufferedWriter out = null;
-
-    public static String ip;
-    public static int port;
-
     public static void main(String[] args){       
 
         // 10.251.129.1
-        ip = "10.251.129.1";
-        port = 5555;
 
         System.out.println("Launching...");
         launch(args);

@@ -43,9 +43,8 @@ public class Controller{
     //TODO: enable button when mesh is connected again maybe add an observable?
     //method to connect on the press of connect button -changes button to disconnect button
     public void connectOnPress(){
-        meshConnector.sendMessage(hue);
+        meshConnector.sendMessage();
         //connectButton.setDisable(true);
-        System.out.println(App.hue);
     }
 
     public void AppendToMeshStream(String text){

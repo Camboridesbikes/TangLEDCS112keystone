@@ -1,20 +1,29 @@
+/**
+ *  MeshConnect class is responsible for the interaction with the mesh network that the 
+ * Lanterns inhabit. The class takes an ip and a port in order to connect to the appropriate 
+ * network. The class holds a few inner classes that set up the socket as well as the i/o 
+ * streams accordingly. 
+ * 
+ * The most notable inner class is the MeshHandler class. This class processes and handles 
+ * that data required for connecting to the mesh.
+ * 
+ * The code in this class is built off of painlessMeshAndroid (https://gitlab.com/painlessMesh/painlessmesh_android) by Bernd Giesecke.
+ * 
+ *  @Author: Cameron Hattendorf
+ *  @Version: 2.1
+ */
+
 package app;
 
 import java.net.*;
 import java.nio.charset.StandardCharsets;
-
-// import app.MeshConnect.ConnectRunnable;
-// import app.MeshConnect.ReceiveRunnable;
-// import app.MeshConnect.SendRunnable;
-// import app.MeshConnect.MeshHandler;
-//import jdk.javadoc.internal.tool.Start;
 
 import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.List;
 
 import java.text.DecimalFormat;
-import java.util.Random;
+// import java.util.Random;
 
 import org.joda.time.DateTime;
 import org.json.*;
@@ -33,8 +42,6 @@ public class MeshConnect {
     private static int meshPort;
     private static long myNodeId;
     private static long apNodeId;
-
-    private int hue;
 
     private static Socket meshSocket;
 
@@ -62,8 +69,7 @@ public class MeshConnect {
         apNodeId = 0;
     }
 
-    public Boolean sendMessage(int hue){
-        this.hue = hue;
+    public Boolean sendMessage(){
         
         Connect(meshIp, meshPort);
         
@@ -318,11 +324,6 @@ public class MeshConnect {
     }
 
     private static class MeshHandler {
-        private int hue = 0;
-
-        public void setHue(int hue){
-            this.hue = hue;
-        }
     
 
         private static String logTime(){
@@ -391,7 +392,7 @@ public class MeshConnect {
         static public void nodeSyncRequest(){
     
             JSONObject nodeMessage = new JSONObject();
-            JSONArray subsArray = new JSONArray();
+            // JSONArray subsArray = new JSONArray();
             
             try{
                 nodeMessage.put("dest", apNodeId);
@@ -456,7 +457,7 @@ public class MeshConnect {
         }
     
         static public void nodeMessageRequest(){
-            Random rand = new Random();
+            // Random rand = new Random();
             DecimalFormat decForm = new DecimalFormat("000");
     
             String message = ("talk" + decForm.format(Controller.hue));
