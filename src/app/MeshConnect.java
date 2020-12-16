@@ -35,7 +35,7 @@ import java.io.*;
 
 
 public class MeshConnect {
-    public static final String DEFAULT_IP = "10.251.129.1";
+    public static final String DEFAULT_IP = "10.211.205.1"; // 10.251.129.1
     public static final int DEFAULT_PORT = 5555;
 
     private static String meshIp;
@@ -71,7 +71,7 @@ public class MeshConnect {
 
     public Boolean sendMessage(){
         
-        Connect(meshIp, meshPort);
+        Connect(/*meshIp, meshPort*/);
         
         return false;
     }
@@ -89,9 +89,9 @@ public class MeshConnect {
      * @param meshIp
      * @param meshPort
      */
-    private static void Connect(String ip, int port){
-        meshIp = "10.251.129.1";
-        meshPort = 5555;
+    private static void Connect(/*String ip, int port*/){
+        //  meshIp = ip;
+        // meshPort = port;
 
         //start new thread
         new Thread(new ConnectRunnable()).start();
@@ -180,7 +180,7 @@ public class MeshConnect {
             System.out.println("connection failed: " + e);
             textStream.set("\nconnection failed: " + e);
             }
-            Disconnect();
+            
         }
     }
 
@@ -318,8 +318,10 @@ public class MeshConnect {
                 }
                 System.out.println("sending stopped");
                 textStream.set("\nSending Stopped");
+
+                
             }
-        
+                    
         
     }
 

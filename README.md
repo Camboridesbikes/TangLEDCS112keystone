@@ -37,5 +37,9 @@ Both Lanterns Interacting: https://www.youtube.com/watch?v=GCt-INOi8gM
     
 </p>
 
+    And a demo of the java program in use:
+
+    <img src="https://github.com/Camboridesbikes/TangLEDCS112keystone/blob/main/TangLEDCS112Demo.gif" alt="Image of GUI Wireframe" />
+
 
 

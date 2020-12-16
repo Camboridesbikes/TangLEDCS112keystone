@@ -265,7 +265,6 @@ void setup() {
 FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, LED_COUNT);//FastLED
 FastLED.setBrightness(255);
 
-
   
   //  task to change led color. checks flag
   //scheduler.addTask( controlLed );
